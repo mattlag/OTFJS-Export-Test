@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>OTFJS Export Test</title>
+		<script type="module">
+			import * as opentype_july_30 from './opentype_july_30.mjs';
+			import { default as opentype_v1_3_4 } from './opentype.module_v1.3.4.js';
+
+			window.saveOTFFile = function (old = false) {
+				const opentype = old ? opentype_v1_3_4 : opentype_july_30;
+				const name = `OTFJS-Export-Test-${old ? 'v1-3-4' : 'july30'}`;
+				// Basically the example from the docs
+
+				// this .notdef glyph is required.
+				const notdefGlyph = new opentype.Glyph({
+					name: '.notdef',
+					advanceWidth: 650,
+					path: new opentype.Path(),
+				});
+
+				const aPath = new opentype.Path();
+				aPath.moveTo(100, 0);
+				aPath.lineTo(100, 700);
+				aPath.lineTo(0, 700);
+				aPath.lineTo(0, 0);
+				aPath.lineTo(100, 0);
+				aPath.close();
+
+				const aGlyph = new opentype.Glyph({
+					name: 'A',
+					unicode: 65,
+					advanceWidth: 650,
+					path: aPath,
+				});
+
+				const font = new opentype.Font({
+					familyName: name,
+					styleName: 'Medium',
+					unitsPerEm: 1000,
+					ascender: 800,
+					descender: -200,
+					glyphs: [notdefGlyph, aGlyph],
+				});
+
+				// Trigger save from browser
+				const href = window.URL.createObjectURL(
+					new Blob([font.toArrayBuffer()])
+				);
+				Object.assign(document.createElement('a'), {
+					download: `${name}.otf`,
+					href,
+				}).click();
+			};
+		</script>
+		<style>
+			body {
+				width: 100vw;
+				height: 100vh;
+				text-align: center;
+				overflow: hidden;
+			}
+
+			button {
+				font-size: 2em;
+				margin-top: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<button onclick="saveOTFFile(true);">Save OTF File (using v1.3.4)</button>
+		<br />
+		<br />
+		<button onclick="saveOTFFile(false);">
+			Save OTF File (using July 30th build)
+		</button>
+	</body>
+</html>
