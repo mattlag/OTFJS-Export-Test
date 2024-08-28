@@ -5,12 +5,45 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>OTFJS Export Test</title>
 		<script type="module">
-			import * as opentype_july_30 from './opentype_july_30.mjs';
-			import { default as opentype_v1_3_4 } from './opentype.module_v1.3.4.js';
+			// import * as opentype_2024_01_01 from './opentype_2024_01_01.js';
+			// import * as opentype_2024_07_30 from './opentype_2024_07_30.mjs';
+			// import * as opentype_2023_06_11 from './opentype_2023_06_11.js';
+			// import * as opentype_2023_03_03 from './opentype_2023_03_03.js';
+			// import * as opentype_2023_02_12 from './opentype_2023_02_12.js';
+			// import * as opentype_2023_02_05 from './opentype_2023_02_05.js';
+			import * as opentype_2023_02_04_8e7449f from './opentype_2023_02_04_8e7449f.js';
+			import * as opentype_2023_02_04_062c7ac from './opentype_2023_02_04_062c7ac.js';
+			import * as opentype_2023_02_04_4a57b96 from './opentype_2023_02_04_4a57b96.js';
+			import * as opentype_2023_02_04_fbc9c39 from './opentype_2023_02_04_fbc9c39.js';
+			import * as opentype_2023_02_04_858a5d2 from './opentype_2023_02_04_858a5d2.js';
+			import * as opentype_2023_02_04_4c06e44 from './opentype_2023_02_04_4c06e44.js';
+			import * as opentype_2023_02_04_c331cca from './opentype_2023_02_04_c331cca.js';
+			import * as opentype_2023_02_03 from './opentype_2023_02_03.js';
+			import * as opentype_2023_01_07 from './opentype_2023_01_07.js';
+			import { default as opentype_v1_3_4 } from './opentype_v1.3.4.js';
 
-			window.saveOTFFile = function (old = false) {
-				const opentype = old ? opentype_v1_3_4 : opentype_july_30;
-				const name = `OTFJS-Export-Test-${old ? 'v1-3-4' : 'july30'}`;
+			const versions = {
+				// opentype_2024_07_30: { app: opentype_2024_07_30, state: 'fail' },
+				// opentype_2024_01_01: { app: opentype_2024_01_01, state: 'fail' },
+				// opentype_2023_06_11: { app: opentype_2023_06_11, state: 'fail' },
+				// opentype_2023_03_03: { app: opentype_2023_03_03, state: 'fail' },
+				// opentype_2023_02_12: { app: opentype_2023_02_12, state: 'fail' },
+				// opentype_2023_02_05: { app: opentype_2023_02_05, state: 'fail' },
+				opentype_2023_02_04_8e7449f: { app: opentype_2023_02_04_8e7449f, state: 'fail' },
+				opentype_2023_02_04_062c7ac: { app: opentype_2023_02_04_062c7ac, state: 'fail' },
+				opentype_2023_02_04_4a57b96: { app: opentype_2023_02_04_4a57b96, state: 'fail' },
+				opentype_2023_02_04_fbc9c39: { app: opentype_2023_02_04_fbc9c39, state: 'fail' },
+				opentype_2023_02_04_858a5d2: { app: opentype_2023_02_04_858a5d2, state: 'fail' },
+				opentype_2023_02_04_4c06e44: { app: opentype_2023_02_04_4c06e44, state: 'error' },
+				opentype_2023_02_04_c331cca: { app: opentype_2023_02_04_c331cca, state: 'pass' },
+				opentype_2023_02_03: { app: opentype_2023_02_03, state: 'pass' },
+				opentype_2023_01_07: { app: opentype_2023_01_07, state: 'pass' },
+				opentype_v1_3_4: { app: opentype_v1_3_4, state: 'pass' },
+			};
+
+			window.saveOTFFile = function (versionName = 'v1_3_4') {
+				const opentype = versions[versionName].app;
+				const name = `OTFJS-Export-Test-${versionName}`;
 				// Basically the example from the docs
 
 				// this .notdef glyph is required.
@@ -23,57 +56,88 @@
 				const aPath = new opentype.Path();
 				aPath.moveTo(100, 0);
 				aPath.lineTo(100, 700);
-				aPath.lineTo(0, 700);
-				aPath.lineTo(0, 0);
+				aPath.lineTo(20, 700);
+				aPath.lineTo(20, 0);
 				aPath.lineTo(100, 0);
 				aPath.close();
 
 				const aGlyph = new opentype.Glyph({
 					name: 'A',
 					unicode: 65,
-					advanceWidth: 650,
+					advanceWidth: 120,
+					path: aPath,
+				});
+
+				const bGlyph = new opentype.Glyph({
+					name: 'B',
+					unicode: 66,
+					advanceWidth: 220,
 					path: aPath,
 				});
 
 				const font = new opentype.Font({
 					familyName: name,
-					styleName: 'Medium',
+					styleName: 'Regular',
 					unitsPerEm: 1000,
 					ascender: 800,
 					descender: -200,
-					glyphs: [notdefGlyph, aGlyph],
+					glyphs: [notdefGlyph, aGlyph, bGlyph],
 				});
 
 				// Trigger save from browser
-				const href = window.URL.createObjectURL(
-					new Blob([font.toArrayBuffer()])
-				);
+				const href = window.URL.createObjectURL(new Blob([font.toArrayBuffer()]));
 				Object.assign(document.createElement('a'), {
 					download: `${name}.otf`,
 					href,
 				}).click();
 			};
+
+			document.addEventListener('DOMContentLoaded', () => {
+				for (const version in versions) {
+					console.log(`loading button for ${version}`);
+					document.body.innerHTML += `
+						<button onclick="saveOTFFile('${version}');" class="${versions[version].state}">
+							[ ${versions[version].state} ] ${version.substring(9)}
+						</button>
+						<br><br>
+					`;
+				}
+			});
 		</script>
 		<style>
 			body {
-				width: 100vw;
-				height: 100vh;
 				text-align: center;
-				overflow: hidden;
+				font-family: Verdana, Geneva, Tahoma, sans-serif;
 			}
 
 			button {
-				font-size: 2em;
-				margin-top: 20px;
+				font-family: monospace;
+				margin-top: 10px;
+				width: 300px;
+				border-width: 2px 2px 2px 10px;
+				border-style: solid;
+				border-color: gray;
+				border-radius: 4px;
+				padding: 4px 0px 4px 4px;
+				text-align: left;
+				cursor: pointer;
+			}
+
+			.fail {
+				border-color: red;
+			}
+
+			.error {
+				border-color: darkred;
+				background-color: pink;
+			}
+
+			.pass {
+				border-color: lime;
 			}
 		</style>
 	</head>
 	<body>
-		<button onclick="saveOTFFile(true);">Save OTF File (using v1.3.4)</button>
-		<br />
-		<br />
-		<button onclick="saveOTFFile(false);">
-			Save OTF File (using July 30th build)
-		</button>
+		<h1>versions</h1>
 	</body>
 </html>
