@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>OTFJS Export Test</title>
 		<script type="module">
+			import * as opentype_2024_07_30_UPDATE from './opentype_2024_07_30_UPDATE.mjs';
 			// import * as opentype_2024_07_30 from './opentype_2024_07_30.mjs';
 			// import * as opentype_2024_01_01 from './opentype_2024_01_01.js';
 			// import * as opentype_2023_06_11 from './opentype_2023_06_11.js';
@@ -24,6 +25,7 @@
 			import { default as opentype_v1_3_4 } from './opentype_v1.3.4.js';
 
 			const versions = {
+				opentype_2024_07_30_UPDATE: { app: opentype_2024_07_30_UPDATE, state: 'a' },
 				// opentype_2024_07_30: { app: opentype_2024_07_30, state: 'fail' },
 				// opentype_2024_01_01: { app: opentype_2024_01_01, state: 'fail' },
 				// opentype_2023_06_11: { app: opentype_2023_06_11, state: 'fail' },
@@ -86,10 +88,12 @@
 					glyphs: [notdefGlyph, aGlyph, bGlyph],
 				});
 
+				// font.names.windows.uniqueID = { en: ' :OTFJS-Export-Test-opentype_2024_07_30_UPDATE Regular' };
 				console.log(`Exporting ${versionName}`, font);
-
+				
 				// Trigger save from browser
-				const href = window.URL.createObjectURL(new Blob([font.toArrayBuffer()]));
+				const fontBlob = new Blob([font.toArrayBuffer()]);
+				const href = window.URL.createObjectURL(fontBlob);
 				Object.assign(document.createElement('a'), {
 					download: `${name}.otf`,
 					href,
